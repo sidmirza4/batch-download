@@ -53,11 +53,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "closeTab" && sender.tab) {
+    chrome.tabs.remove(sender.tab.id, () => {
+      console.log(`Closed tab with ID: ${sender.tab.id}`);
+    });
+  }
+});
+
 function clickDownloadButton() {
   // Assuming the download button has a class 'link-button' (adjust as needed)
   const downloadButton = document.querySelector(".link-button");
   if (downloadButton) {
     downloadButton.click();
+
+    setTimeout(() => {
+      chrome.runtime.sendMessage({ type: "closeTab" });
+    }, 2000);
   } else {
     console.log("Download button not found.");
   }
